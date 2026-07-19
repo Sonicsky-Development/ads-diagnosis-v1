@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Ads & Website Diagnostic</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #f6f5f2;
+    --surface: #ffffff;
+    --border: #e4e1da;
+    --text: #1c1c1a;
+    --text-dim: #6b6963;
+    --violet: #5b4bff;
+    --violet-dim: #efedff;
+    --green: #1a8f5a;
+    --green-bg: #e7f6ee;
+    --red: #d64545;
+    --red-bg: #fbe9e9;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    padding: 40px 20px;
+  }
+
+  h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; font-weight: 600; margin: 0; }
+
+  .wrap { max-width: 960px; margin: 0 auto; }
+
+  .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .top h1 { font-size: 28px; }
+  .top p { color: var(--text-dim); font-size: 14px; margin-top: 6px; max-width: 480px; }
+
+  .pill {
+    background: var(--violet-dim);
+    color: var(--violet);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 20px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 20px;
+  }
+
+  @media (max-width: 780px) { .grid { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  }
+
+  .card-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .card-sub { font-size: 13px; color: var(--text-dim); margin-bottom: 18px; }
+
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  label {
+    display: block; font-size: 12px; font-weight: 600; color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 5px; margin-top: 14px;
+  }
+  .field-row label { margin-top: 14px; }
+
+  .optional-tag { font-size: 11px; font-weight: 400; text-transform: none; letter-spacing: 0; color: #a19e96; }
+
+  input, textarea {
+    width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text);
+    padding: 10px 12px; border-radius: 8px; font-size: 14px; font-family: inherit; resize: vertical;
+  }
+  input:focus, textarea:focus { outline: none; border-color: var(--violet); background: var(--surface); }
+
+  button {
+    width: 100%; margin-top: 22px; padding: 13px; border: none; border-radius: 8px;
+    background: var(--violet); color: #ffffff; font-weight: 600; font-size: 14px;
+    cursor: pointer; font-family: inherit; transition: background 0.15s;
+  }
+  button:hover { background: #4a3bea; }
+  button:disabled { opacity: 0.5; cursor: default; }
+
+  .empty-state {
+    color: var(--text-dim); font-size: 14px; text-align: center; padding: 60px 10px;
+    border: 1px dashed var(--border); border-radius: 10px;
+  }
+
+  .verdict-banner {
+    display: inline-block; font-size: 12px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.04em; padding: 5px 12px; border-radius: 6px; margin-bottom: 14px;
+  }
+  .verdict-ads { background: var(--red-bg); color: var(--red); }
+  .verdict-website { background: var(--violet-dim); color: var(--violet); }
+  .verdict-both { background: #fff3d6; color: #a5720a; }
+
+  .result { white-space: pre-wrap; font-size: 14px; line-height: 1.65; color: var(--text); }
+
+  .history-item {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 16px; margin-bottom: 8px; cursor: pointer; transition: border-color 0.15s;
+  }
+  .history-item:hover { border-color: var(--violet); }
+  .history-item .date { font-size: 11px; color: var(--text-dim); font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+  .history-item .snapshot { font-size: 13px; margin-top: 4px; color: var(--text); }
+
+  .loading {
+    display: flex; align-items: center; gap: 8px; color: var(--text-dim); font-size: 14px;
+    padding: 40px 0; justify-content: center;
+  }
+  .spinner {
+    width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--violet);
+    border-radius: 50%; animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .section-title { font-size: 15px; font-weight: 600; margin: 32px 0 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <div>
+      <h1>Where's the leak?</h1>
+      <p>Drop in your current numbers. Get a direct read on whether the problem is your ads or your website.</p>
+    </div>
+    <div class="pill">Live diagnosis</div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card-title">Your numbers</div>
+      <div class="card-sub">All fields optional — fill in what you've got.</div>
+
+      <div class="field-row">
+        <div><label>CTR (%)</label><input id="ctr" type="text" placeholder="8.9"></div>
+        <div><label>Avg. CPC (€)</label><input id="cpc" type="text" placeholder="0.90"></div>
+      </div>
+      <div class="field-row">
+        <div><label>Impression share (%)</label><input id="impshare" type="text" placeholder="65"></div>
+        <div><label>Bounce rate (%)</label><input id="bounce" type="text" placeholder="70"></div>
+      </div>
+      <div class="field-row">
+        <div><label>Avg. session duration</label><input id="session" type="text" placeholder="0:45"></div>
+        <div><label>Clicks <span class="optional-tag">optional</span></label><input id="clicks" type="text" placeholder="278"></div>
+      </div>
+
+      <label>Calls booked <span class="optional-tag">optional</span></label>
+      <input id="calls" type="text" placeholder="0">
+
+      <label>Top keywords</label>
+      <textarea id="keywords" rows="2" placeholder="web developer for agency, custom website design..."></textarea>
+
+      <label>Search terms report <span class="optional-tag">what people actually typed</span></label>
+      <textarea id="searchterms" rows="3" placeholder="Paste raw search terms, one per line"></textarea>
+
+      <button id="analyze-btn">Run diagnosis</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Diagnosis</div>
+      <div class="card-sub">&nbsp;</div>
+      <div id="result-area">
+        <div class="empty-state">Fill in your numbers and run the diagnosis to see where the problem likely is.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">History</div>
+  <div id="history-list"></div>
+
+</div>
+
+<script>
+function val(id) { return document.getElementById(id).value.trim(); }
+
+function buildPrompt() {
+  const fields = {
+    "CTR": val("ctr") + "%",
+    "Average CPC": "€" + val("cpc"),
+    "Search Impression Share": val("impshare") + "%",
+    "Bounce rate": val("bounce") + "%",
+    "Average session duration": val("session"),
+    "Clicks": val("clicks"),
+    "Calls booked": val("calls"),
+    "Top keywords": val("keywords"),
+    "Search terms report": val("searchterms")
+  };
+  let lines = [];
+  for (const [k, v] of Object.entries(fields)) {
+    if (v && v !== "%" && v !== "€") lines.push(`${k}: ${v}`);
+  }
+  return lines.join("\n");
+}
+
+function snapshotSummary() {
+  const parts = [];
+  if (val("ctr")) parts.push(`CTR ${val("ctr")}%`);
+  if (val("cpc")) parts.push(`CPC €${val("cpc")}`);
+  if (val("bounce")) parts.push(`Bounce ${val("bounce")}%`);
+  if (val("calls")) parts.push(`Calls ${val("calls")}`);
+  return parts.join(" · ") || "No summary";
+}
+
+function detectVerdict(text) {
+  const lower = text.toLowerCase();
+  const first = lower.slice(0, 150);
+  if (first.includes("website problem") || first.includes("mainly a website")) return "website";
+  if (first.includes("ads problem") || first.includes("mainly an ads")) return "ads";
+  if (first.includes("both")) return "both";
+  return null;
+}
+
+function renderResult(diagnosis) {
+  const verdict = detectVerdict(diagnosis);
+  let banner = "";
+  if (verdict === "ads") banner = '<div class="verdict-banner verdict-ads">Likely an Ads problem</div><br>';
+  else if (verdict === "website") banner = '<div class="verdict-banner verdict-website">Likely a Website problem</div><br>';
+  else if (verdict === "both") banner = '<div class="verdict-banner verdict-both">Likely both</div><br>';
+  return `${banner}<div class="result">${diagnosis}</div>`;
+}
+
+function loadHistory() {
+  const listEl = document.getElementById("history-list");
+  let items = [];
+  try {
+    items = JSON.parse(localStorage.getItem("ads-diagnostic-history") || "[]");
+  } catch (e) { items = []; }
+
+  if (items.length === 0) {
+    listEl.innerHTML = '<div class="empty-state">No history yet — your first check will show up here.</div>';
+    return;
+  }
+
+  items.sort((a, b) => new Date(b.date) - new Date(a.date));
+  listEl.innerHTML = items.map(item => `
+    <div class="history-item">
+      <div class="date">${new Date(item.date).toLocaleString()}</div>
+      <div class="snapshot">${item.snapshot}</div>
+    </div>
+  `).join("");
+
+  listEl.querySelectorAll(".history-item").forEach((el, i) => {
+    el.onclick = () => {
+      document.getElementById("result-area").innerHTML = renderResult(items[i].diagnosis);
+    };
+  });
+}
+
+function saveToHistory(record) {
+  let items = [];
+  try {
+    items = JSON.parse(localStorage.getItem("ads-diagnostic-history") || "[]");
+  } catch (e) { items = []; }
+  items.push(record);
+  localStorage.setItem("ads-diagnostic-history", JSON.stringify(items));
+}
+
+document.getElementById("analyze-btn").onclick = async () => {
+  const btn = document.getElementById("analyze-btn");
+  const resultArea = document.getElementById("result-area");
+  const promptData = buildPrompt();
+
+  if (!promptData) {
+    resultArea.innerHTML = '<div class="empty-state">Add at least one metric first.</div>';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "Analyzing...";
+  resultArea.innerHTML = '<div class="loading"><div class="spinner"></div> Analyzing your funnel...</div>';
+
+  try {
+    const response = await fetch("/api/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ promptData })
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      resultArea.innerHTML = `<div class="empty-state">${data.error || "Something went wrong. Try again."}</div>`;
+      return;
+    }
+
+    resultArea.innerHTML = renderResult(data.diagnosis);
+    saveToHistory({ date: new Date().toISOString(), snapshot: snapshotSummary(), diagnosis: data.diagnosis });
+    loadHistory();
+  } catch (e) {
+    resultArea.innerHTML = '<div class="empty-state">Something went wrong. Try again.</div>';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Run diagnosis";
+  }
+};
+
+loadHistory();
+</script>
+</body>
+</html>
