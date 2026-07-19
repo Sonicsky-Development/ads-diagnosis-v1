@@ -22,30 +22,12 @@
 
   * { box-sizing: border-box; }
 
- body {
+  body {
     margin: 0;
-    background: linear-gradient(180deg, #ffffff 0%, #f6f5f2 420px);
+    background: var(--bg);
     color: var(--text);
     font-family: 'Inter', sans-serif;
-    padding: 0;
-  }.site-header {
-    background: rgba(255,255,255,0.7);
-    border-bottom: 1px solid var(--border);
-    padding: 18px 32px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 40px;
-  }
-
-  .site-header .brand {
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 600;
-    font-size: 15px;
-  }
-
-  .content-pad {
-    padding: 0 20px 40px;
+    padding: 40px 20px;
   }
 
   h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; font-weight: 600; margin: 0; }
@@ -169,17 +151,15 @@
   .section-title { font-size: 15px; font-weight: 600; margin: 32px 0 14px; }
 </style>
 </head>
-<body><div class="site-header">
-  <div class="brand">ADv-1</div>
-  <div class="pill"><span class="pulse-dot"></span>Live diagnosis</div>
-</div>
-<div class="wrap content-pad">
+<body>
+<div class="wrap">
 
   <div class="top">
     <div>
       <h1>ADv-1</h1>
       <p>Drop in your current numbers. Get a direct read on whether the problem is your ads or your website.</p>
     </div>
+    <div class="pill"><span class="pulse-dot"></span>Live diagnosis</div>
   </div>
 
   <div class="grid">
