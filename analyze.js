@@ -13,7 +13,8 @@ export default async function handler(req, res) {
 1. One-sentence verdict starting with exactly "This is mainly an Ads problem" or "This is mainly a Website problem" or "This is both an Ads and Website problem" - then explain briefly.
 2. Top 2-3 specific things to fix, based on the actual numbers given, in priority order.
 3. One thing NOT to worry about right now.
-Keep it under 200 words. No preamble, get straight into it.`;
+Keep it under 200 words. No preamble, get straight into it.
+On the very last line, output exactly: SCORE: X — where X is a whole number from -10 to 10 representing overall ad and website health right now. Base it on conversion rate (calls booked vs clicks), CTR, CPC efficiency, bounce rate, and session duration together. -10 to -1 means real problems present, 0 means neutral or not enough data, 1 to 10 means healthy and improving. Be honest and vary the number based on the actual numbers given, don't default to the same score every time.`;
 
   try {
     const response = await fetch("https://api.anthropic.com/v1/messages", {
@@ -37,8 +38,11 @@ Keep it under 200 words. No preamble, get straight into it.`;
       return res.status(response.status).json({ error: data.error?.message || "API error" });
     }
 
-    const text = data.content.map((b) => b.text || "").join("\n");
-    return res.status(200).json({ diagnosis: text });
+    const fullText = data.content.map((b) => b.text || "").join("\n");
+    const scoreMatch = fullText.match(/SCORE:\s*(-?\d+)/i);
+    const score = scoreMatch ? Math.max(-10, Math.min(10, parseInt(scoreMatch[1]))) : 0;
+    const diagnosis = fullText.replace(/SCORE:\s*-?\d+/i, "").trim();
+    return res.status(200).json({ diagnosis, score });
   } catch (err) {
     return res.status(500).json({ error: "Server error, please try again" });
   }
